@@ -43,7 +43,7 @@ spec:
         - name: INSTALL_MAGENTO
           value: "true"
         - name: MAGENTO_MYSQL_HOST
-          value: "10.245.226.222"
+          value: "10.245.235.150"
         - name: MAGENTO_MYSQL_DB
           value: "magento"
         - name: MAGENTO_MYSQL_USER
