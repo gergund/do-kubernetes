@@ -1,0 +1,77 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: magento-db
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 8Gi
+  storageClassName: do-block-storage
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: magento2-secrets
+type: Opaque
+data:
+  db-password: cGFzc3dvcmQ=
+  magento-db-password: bWFnZW50bw==
+---
+apiVersion: v1
+kind: ReplicationController
+metadata:
+  name: magento2-mysql
+spec:
+  replicas: 1
+  selector:
+    app: magento2-mysql
+  template:
+    metadata:
+      name: magento2-mysql
+      labels:
+        app: magento2-mysql
+    spec:
+      containers:
+      - name: mysql
+        image: mysql:5.7
+        args:
+          - "--ignore-db-dir=lost+found"
+        ports:
+        - name: mysql-port
+          containerPort: 3306
+        env:
+          - name: MYSQL_ROOT_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: magento2-secrets
+                key: db-password
+          - name: MYSQL_DATABASE
+            value: "magento"
+          - name: MYSQL_USER
+            value: "magento"
+          - name: MYSQL_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: magento2-secrets
+                key: magento-db-password
+        volumeMounts:
+        - mountPath: "/var/lib/mysql"
+          name: mysql-storage
+      volumes:
+        - name: mysql-storage
+          persistentVolumeClaim:
+            claimName: magento-db
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: magento2-mysql
+spec:
+  ports:
+  - port: 3306
+    protocol: TCP
+  selector:
+    app: magento2-mysql
+  type: ClusterIP

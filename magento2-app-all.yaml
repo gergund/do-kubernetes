@@ -1,3 +1,15 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: magento
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 8Gi
+  storageClassName: do-block-storage
+---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -29,9 +41,9 @@ spec:
         - name: COPY_MAGENTO_VOLUME
           value: "true"          
         - name: INSTALL_MAGENTO
-          value: "false"
+          value: "true"
         - name: MAGENTO_MYSQL_HOST
-          value: "10.245.37.182"
+          value: "10.245.226.222"
         - name: MAGENTO_MYSQL_DB
           value: "magento"
         - name: MAGENTO_MYSQL_USER
@@ -69,3 +81,17 @@ spec:
         - name: magento-code
           persistentVolumeClaim:
             claimName: magento
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: magento2-app
+spec:
+  type: LoadBalancer
+  selector:
+    app: magento2-app
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 80
+      name: magento2-app
