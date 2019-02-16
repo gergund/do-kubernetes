@@ -1,0 +1,94 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: magento2-app
+  labels:
+    app: magento2-app
+spec:
+  replicas: 1
+  serviceName: magento2-app
+  selector:
+    matchLabels:
+      app: magento2-app
+  template:
+    metadata:
+      labels:
+        app: magento2-app
+    spec:
+      containers:
+      - name: magento2-php-fpm
+        image: vpn.itwnik.com/docker-magento2_php-fpm
+        env:
+        - name: ENABLE_XDEBUG
+          value: "false"
+        - name: ENABLE_SENDMAIL
+          value: "false"
+        - name: MAGENTO_MODE
+          value: "production"
+        - name: RESET_MAGENTO_MODE
+          value: "false"
+        - name: COPY_MAGENTO_VOLUME
+          value: "true"          
+        - name: INSTALL_MAGENTO
+          value: "true"
+        - name: MAGENTO_MYSQL_HOST
+          value: "10.245.235.150"
+        - name: MAGENTO_MYSQL_DB
+          value: "magento"
+        - name: MAGENTO_MYSQL_USER
+          value: "magento"
+        - name: MAGENTO_MYSQL_PASSWORD
+          value: "magento"
+        - name: MAGENTO_URL
+          value: "http://docker.magento.loc"
+        - name: MAGENTO_ADMIN_USER
+          value: "admin"
+        - name: MAGENTO_ADMIN_PASSWORD
+          value: "123123qa"
+        - name: MAGENTO_ADMIN_EMAIL
+          value: "gergund@gmail.com"      
+        ports:
+          - containerPort: 9000
+        volumeMounts:
+          - mountPath: "/var/www/html"
+            name: magento-code
+    
+      - name: magento2-nginx
+        image: vpn.itwnik.com/docker-magento2_nginx
+        env:
+        - name: NGINX_VHOST
+          value: "docker.magento.loc"
+        - name: NGINX_FASTCGI_HOST
+          value: "127.0.0.1"
+        ports:
+          - containerPort: 80
+        volumeMounts:
+          - mountPath: "/var/www/html"
+            name: magento-code
+            
+      volumes:        
+        - name: magento-code
+  volumeClaimTemplates:
+    - metadata:
+        name: magento
+      spec:
+        accessModes:
+          - ReadWriteOnce
+        resources:
+          requests:
+            storage: 8Gi
+        storageClassName: do-block-storage
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: magento2-app
+spec:
+  type: LoadBalancer
+  selector:
+    app: magento2-app
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 80
+      name: magento2-app
