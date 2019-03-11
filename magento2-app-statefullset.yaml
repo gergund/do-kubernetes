@@ -32,7 +32,7 @@ spec:
         - name: INSTALL_MAGENTO
           value: "true"
         - name: MAGENTO_MYSQL_HOST
-          value: "10.245.235.150"
+          value: "10.245.85.68"
         - name: MAGENTO_MYSQL_DB
           value: "magento"
         - name: MAGENTO_MYSQL_USER
@@ -46,7 +46,13 @@ spec:
         - name: MAGENTO_ADMIN_PASSWORD
           value: "123123qa"
         - name: MAGENTO_ADMIN_EMAIL
-          value: "gergund@gmail.com"      
+          value: "gergund@gmail.com"
+        - name: MAGENTO_SESSION_REDIS_HOST
+          value: "10.245.13.246"
+        - name: MAGENTO_CACHE_REDIS_HOST
+          value: "10.245.13.246"
+        - name: MAGENTO_FPC_REDIS_HOST
+          value: "10.245.13.246"
         ports:
           - containerPort: 9000
         volumeMounts:
