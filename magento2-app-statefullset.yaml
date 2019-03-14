@@ -58,6 +58,8 @@ spec:
         volumeMounts:
           - mountPath: "/var/www/html"
             name: magento-code
+          - mountPath: "/var/www/html/pub/media"
+            name: magento-media
     
       - name: magento2-nginx
         image: vpn.itwnik.com/docker-magento2_nginx
@@ -71,12 +73,16 @@ spec:
         volumeMounts:
           - mountPath: "/var/www/html"
             name: magento-code
+          - mountPath: "/var/www/html/pub/media"
+            name: magento-media
             
-      volumes:        
-        - name: magento-code
+      volumes:
+      - name: magento-media
+        persistentVolumeClaim:
+          claimName: nfs-media
   volumeClaimTemplates:
     - metadata:
-        name: magento
+        name: magento-code
       spec:
         accessModes:
           - ReadWriteOnce

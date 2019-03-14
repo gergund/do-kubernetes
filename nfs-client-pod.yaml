@@ -1,0 +1,18 @@
+kind: Pod
+apiVersion: v1
+metadata:
+  name: nfs-client-pod
+spec:
+  containers:
+    - name: nfs-client-pod
+      image: alpine
+      volumeMounts:
+        - name: nfs-volume
+          mountPath: /nfs-exports
+      command: ["/bin/sh"]
+      args: ["-c", "sleep 500000"]
+  volumes:
+    - name: nfs-volume
+      nfs:
+        server: 10.245.194.153
+        path: /exports
