@@ -9,7 +9,7 @@ spec:
   tls:
   - hosts:
     - magento2.itwnik.com
-    secretName: letsencrypt-prod
+    secretName: magento2-tls
   rules:
   - host: magento2.itwnik.com
     http:
