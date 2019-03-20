@@ -1,0 +1,16 @@
+apiVersion: batch/v1beta1
+kind: CronJob
+metadata:
+  name: magento2-app-cronjob
+spec:
+  schedule: "*/2 * * * *"
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+          - name: magento2-app-cronjob
+            image: vpn.itwnik.com/docker-magento2_php-fpm:2
+            command: ["/bin/bash"]
+            args: ["-c", "sudo -u www-data /usr/local/bin/php -f /magento-code/bin/magento cron:run"]
+          restartPolicy: OnFailure
